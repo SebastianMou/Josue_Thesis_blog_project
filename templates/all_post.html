@@ -1,0 +1,82 @@
+{% extends './base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- ======= Portfolio Section ======= -->
+<section id="portfolio" class="portfolio sections-bg">
+  <div class="container" data-aos="fade-up">
+
+    <div class="section-header">
+      <h2>All Posts</h2>
+    </div>
+    <center>
+      <form action="{% url 'search' %}" method="POST" style="width: 50%;" class="input-group rounded">
+        {% csrf_token %}
+        <input name="searched" type="search" class="form-control rounded" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+        <a type="submit" class="btn btn-primary">
+          <i class="bi bi-binoculars"></i>
+        </a>
+      </form>
+      <hr>
+    </center>
+    <br>
+    <div class="portfolio-isotope" data-portfolio-filter="*" data-portfolio-layout="masonry"
+      data-portfolio-sort="original-order" data-aos="fade-up" data-aos-delay="100">
+
+      <div class="row gy-4 portfolio-container">
+        {% for post in posts %}
+          <div class="col-xl-4 col-md-6 portfolio-item filter-app">
+            <div class="portfolio-wrap">
+              <a href="{% url 'details' post.pk %}" data-gallery="portfolio-gallery-app" class="glightbox"><img
+                  src="{{ post.image.url }}" class="img-fluid" alt=""></a>
+              <div class="portfolio-info">
+                <h4><a href="{% url 'details' post.pk %}" title="More Details">{{ post.title }}</a></h4>
+                <p>{{ post.created }}</p>
+              </div>
+            </div>
+          </div><!-- End Portfolio Item -->
+        {% empty %}
+          <p>ningun post</p>
+        {% endfor %}
+
+      </div><!-- End Portfolio Container -->
+      página {{ posts.number }} / {{ posts.paginator.num_pages }}
+      <!-- Pagination-->
+      <nav aria-label="Pagination">
+        <hr class="my-0" />
+        <ul class="pagination justify-content-center my-4">
+          <!--<li class="page-item"><a class="page-link" href="?page=1">&laquo first</a></li>-->
+          {% if posts.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ posts.previous_page_number }}">
+              <i class="bi bi-arrow-left-short"></i>
+            </a>
+          </li>
+          {% endif %}
+
+          {% for num_page in posts.paginator.page_range %}
+            {% if posts.number == num_page %}
+              <li class="page-item active"><a class="page-link" href="?page={{ num_page }}">{{ num_page }}</a></li>
+            {% else %}
+              <li class="page-item"><a class="page-link" href="?page={{ num_page }}">{{ num_page }}</a></li>
+            {% endif %}
+          {% endfor %}
+
+          {% if posts.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ posts.next_page_number }}">
+              <i class="bi bi-arrow-right-short"></i>
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+        <br>
+      </nav>
+    </div>
+
+  </div>
+
+  </div>
+
+</section><!-- End Portfolio Section -->
+{% endblock %}

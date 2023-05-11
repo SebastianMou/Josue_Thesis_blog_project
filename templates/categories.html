@@ -1,0 +1,36 @@
+{% extends './base.html' %}
+{% load static %}
+
+{% block content %}
+ <!-- ======= Portfolio Section ======= -->
+ <section id="portfolio" class="portfolio sections-bg">
+    <div class="container" data-aos="fade-up">
+
+        <div class="section-header">
+            <h2>All Categories</h2>
+        </div>
+
+      <div class="portfolio-isotope" data-portfolio-filter="*" data-portfolio-layout="masonry" data-portfolio-sort="original-order" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row gy-4 portfolio-container">
+          {% for category in categories %}
+            <div class="col-xl-4 col-md-6 portfolio-item filter-app">
+              <div class="portfolio-wrap">
+                <a href="{% url 'category' category.pk %}" data-gallery="portfolio-gallery-app" class="glightbox"><img src="{{ category.category_image.url }}" class="img-fluid" alt=""></a>
+                <div class="portfolio-info">
+                  <h4><a href="{% url 'category' category.pk %}" title="More Details">{{ category.name }}</a></h4>
+                  <p>{{ category.created }}</p>
+                </div>
+              </div>
+            </div><!-- End Portfolio Item -->
+          {% empty %}
+            <p>ningun post</p>
+          {% endfor %}
+
+        </div><!-- End Portfolio Container -->
+
+      </div>
+
+    </div>
+  </section><!-- End Portfolio Section -->
+{% endblock %}
