@@ -5,8 +5,8 @@ from django.contrib.auth.models import User
 from django.db.models import Count
 from django.core.paginator import Paginator
 
-from .models import Post, Category
-from .forms import RegisterForm
+from .models import Post, Category, Comment
+from .forms import RegisterForm, CommentForm
 
 # Create your views here.
 def categories_base(request):
@@ -108,10 +108,28 @@ def details(request, pk):
     categories_with_counts = Category.objects.annotate(post_count=Count('product'))[:10]
     recent_posts = Post.objects.all()[:5]
 
+    comments = post.comments.filter(parent=None)
+    if request.method == 'POST':
+        comment_form = CommentForm(data=request.POST)
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+            new_comment.post = post
+            new_comment.author = request.user  # assuming you have user logged in
+            parent_id = request.POST.get('parent_id')
+            if parent_id:
+                parent_comment = Comment.objects.get(id=parent_id)
+                new_comment.parent = parent_comment
+            new_comment.save()
+            return redirect('details', pk=post.pk)
+    else:
+        comment_form = CommentForm()
+
     context = {
         'post': post,
         'categories_with_counts': categories_with_counts,
         'recent_posts': recent_posts,
+        'comments': comments,
+        'comment_form': comment_form,
     }
     return render(request, 'details.html', context)
 
